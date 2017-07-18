@@ -2,7 +2,7 @@
     "author": "hbh7@hbh7.com",
     "dependencies": {},
     "keywords": [],
-    "name": "monetarymotivation",
+    "name": "-motivate",
     "pebble": {
         "displayName": "MonetaryMotivation",
         "enableMultiJS": true,
@@ -12,6 +12,13 @@
             "media": []
         },
         "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite",
+            "emery"
+        ],
         "uuid": "442dc0e8-a8a6-4cad-9f73-5dc8ebd170e1",
         "watchapp": {
             "watchface": false
