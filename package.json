@@ -1,0 +1,21 @@
+{
+    "author": "hbh7@hbh7.com",
+    "dependencies": {},
+    "keywords": [],
+    "name": "monetarymotivation",
+    "pebble": {
+        "displayName": "MonetaryMotivation",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "uuid": "442dc0e8-a8a6-4cad-9f73-5dc8ebd170e1",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
