@@ -1,5 +1,11 @@
 #include <pebble.h>
 
+// Helpful Info:
+// Created by hbh7
+//
+// Pebble Time: 144 × 168
+// Pebble Round: 180 x 180
+
 static Window *mainWindow;
 static Window *hunterWindow;
 static Window *emeliaWindow;
@@ -12,7 +18,6 @@ static TextLayer *text_layer_rate;
 static TextLayer *text_layer_time;
 static TextLayer *text_layer_wages;
 static TextLayer *text_layer_wages_2;
-
 
 bool roundPebble;
 
@@ -124,11 +129,8 @@ static void mainWindow_unload(Window *window) {
 static void hunterWindow_load(Window *window) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Pushing hunterWindow");
     
-    Layer *hunter_window_layer = window_get_root_layer(hunterWindow);
-    GRect bounds = layer_get_bounds(hunter_window_layer);
-    
-    // Pebble Time: 144 × 168
-    // Pebble Round: 180 x 180
+    Layer *hunterWindow_layer = window_get_root_layer(hunterWindow);
+    GRect bounds = layer_get_bounds(hunterWindow_layer);
     
     if ( roundPebble == true ) {  // K so this is left/right, then down/up. Lower # is higher up.
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
@@ -137,11 +139,11 @@ static void hunterWindow_load(Window *window) {
         text_layer_wages = text_layer_create(GRect(0, 130, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 150, (bounds.size.w), 20));
     } else {                    // K so this is left/right, then down/up. Lower # is higher up. 
-        text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w-10), 20));
-        text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w-10), 20));
-        text_layer_time = text_layer_create(GRect(0, 90, (bounds.size.w-10), 20));
-        text_layer_wages = text_layer_create(GRect(0, 150, (bounds.size.w-10), 20));
-        text_layer_wages_2 = text_layer_create(GRect(0, 150, (bounds.size.w), 20));
+        text_layer_welcome = text_layer_create(GRect(0, 10, (bounds.size.w), 20));
+        text_layer_rate = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
+        text_layer_time = text_layer_create(GRect(0, 70, (bounds.size.w), 20));
+        text_layer_wages = text_layer_create(GRect(0, 120, (bounds.size.w), 20));
+        text_layer_wages_2 = text_layer_create(GRect(0, 140, (bounds.size.w), 20));
     }
     
     text_layer_set_text_alignment(text_layer_welcome, GTextAlignmentCenter);     
@@ -156,11 +158,11 @@ static void hunterWindow_load(Window *window) {
     text_layer_set_text(text_layer_wages, "Current Wages:");
     text_layer_set_text(text_layer_wages_2, "$0.00");
     
-    layer_add_child(hunter_window_layer, text_layer_get_layer(text_layer_welcome));
-    layer_add_child(hunter_window_layer, text_layer_get_layer(text_layer_rate));
-    layer_add_child(hunter_window_layer, text_layer_get_layer(text_layer_time));
-    layer_add_child(hunter_window_layer, text_layer_get_layer(text_layer_wages));
-    layer_add_child(hunter_window_layer, text_layer_get_layer(text_layer_wages_2));
+    layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_welcome));
+    layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_rate));
+    layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_time));
+    layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_wages));
+    layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_wages_2));
 }
 
 static void hunterWindow_unload(Window *window) {
@@ -172,8 +174,8 @@ static void hunterWindow_unload(Window *window) {
 }
 
 static void emeliaWindow_load(Window *window) {
-    Layer *window_layer = window_get_root_layer(window);
-    GRect bounds = layer_get_bounds(window_layer);
+    Layer *emeliaWindow_layer = window_get_root_layer(emeliaWindow);
+    GRect bounds = layer_get_bounds(emeliaWindow_layer);
     
     // Pebble Time: 144 × 168
     // Pebble Round: 180 x 180
@@ -185,11 +187,11 @@ static void emeliaWindow_load(Window *window) {
         text_layer_wages = text_layer_create(GRect(0, 130, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 150, (bounds.size.w), 20));
     } else {                    // K so this is left/right, then down/up. Lower # is higher up.        
-        text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w-10), 20));
-        text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w-10), 20));
-        text_layer_time = text_layer_create(GRect(0, 90, (bounds.size.w-10), 20));
-        text_layer_wages = text_layer_create(GRect(0, 150, (bounds.size.w-10), 20));
-        text_layer_wages_2 = text_layer_create(GRect(0, 150, (bounds.size.w), 20));
+        text_layer_welcome = text_layer_create(GRect(0, 10, (bounds.size.w), 20));
+        text_layer_rate = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
+        text_layer_time = text_layer_create(GRect(0, 70, (bounds.size.w), 20));
+        text_layer_wages = text_layer_create(GRect(0, 120, (bounds.size.w), 20));
+        text_layer_wages_2 = text_layer_create(GRect(0, 140, (bounds.size.w), 20));
     }
     
     text_layer_set_text_alignment(text_layer_welcome, GTextAlignmentCenter);     
