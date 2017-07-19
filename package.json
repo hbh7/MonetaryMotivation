@@ -2,14 +2,28 @@
     "author": "hbh7@hbh7.com",
     "dependencies": {},
     "keywords": [],
-    "name": "-motivate",
+    "name": "money-motive",
     "pebble": {
         "displayName": "MonetaryMotivation",
         "enableMultiJS": true,
         "messageKeys": [],
         "projectType": "native",
         "resources": {
-            "media": []
+            "media": [
+                {
+                    "file": "images/Dollar",
+                    "menuIcon": true,
+                    "name": "Dollar",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/Logo",
+                    "name": "Logo",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                }
+            ]
         },
         "sdkVersion": "3",
         "targetPlatforms": [
