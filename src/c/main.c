@@ -168,7 +168,7 @@ static void mainWindow_unload(Window *window) {
     text_layer_destroy(text_layer_hunter);    
 }
 
-static void hunterWindow_load(Window *hunterWindow) {
+static void hunterWindow_load(Window *window) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Pushing hunterWindow");
     
     Layer *hunter_window_layer = window_get_root_layer(hunterWindow);
@@ -176,20 +176,20 @@ static void hunterWindow_load(Window *hunterWindow) {
     
     // Pebble Time: 144 × 168
     // Pebble Round: 180 x 180
-    /*
+    
     if ( roundPebble == true ) {  // K so this is left/right, then down/up. Lower # is higher up.
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w), 20));
         text_layer_time = text_layer_create(GRect(0, 90, (bounds.size.w), 20));
         text_layer_wages = text_layer_create(GRect(0, 130, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 150, (bounds.size.w), 20));
-    } else {                    // K so this is left/right, then down/up. Lower # is higher up. */
+    } else {                    // K so this is left/right, then down/up. Lower # is higher up. 
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w-10), 20));
         text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w-10), 20));
         text_layer_time = text_layer_create(GRect(0, 90, (bounds.size.w-10), 20));
         text_layer_wages = text_layer_create(GRect(0, 150, (bounds.size.w-10), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 150, (bounds.size.w), 20));
-    //}
+    }
     
     text_layer_set_text_alignment(text_layer_welcome, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_rate, GTextAlignmentCenter);     
@@ -217,7 +217,7 @@ static void hunterWindow_unload(Window *window) {
     text_layer_destroy(text_layer_wages_2);
     
 }
-/*
+
 static void emeliaWindow_load(Window *window) {
     Layer *window_layer = window_get_root_layer(window);
     GRect bounds = layer_get_bounds(window_layer);
@@ -300,7 +300,7 @@ static void emeliaWindow_unload(Window *window) {
     text_layer_destroy(text_layer_wages);
     text_layer_destroy(text_layer_wages_2);
     
-}*/
+}
 
 static void init(void) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Starting Init");
@@ -312,18 +312,16 @@ static void init(void) {
     });
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Created mainWindow");
     hunterWindow = window_create();
-    window_set_click_config_provider(mainWindow, click_config_provider);
     window_set_window_handlers(hunterWindow, (WindowHandlers) {
       .load = hunterWindow_load,
       .unload = hunterWindow_unload,
     });
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Created hunterWindow");
-    /*
-      emeliaWindow = window_create();
-    window_set_window_handlers(hunterWindow, (WindowHandlers) {
+    emeliaWindow = window_create();
+    window_set_window_handlers(emeliaWindow, (WindowHandlers) {
       .load = emeliaWindow_load,
       .unload = emeliaWindow_unload,
-    });*/
+    });
   const bool animated = true;
   window_stack_push(mainWindow, animated);
 }
