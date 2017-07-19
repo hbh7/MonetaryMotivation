@@ -24,23 +24,7 @@ bool roundPebble;
 
 //Hunter
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-    /* 
-    layer_set_hidden((Layer *)text_layer_intro, true);
-    layer_set_hidden((Layer *)text_layer_hunter, true);
-    layer_set_hidden((Layer *)text_layer_emelia, true);
-    
-    text_layer_set_text(text_layer_welcome, "Welcome, Hunter!");
-    text_layer_set_text(text_layer_rate, "Rate: $12/hour");
-    text_layer_set_text(text_layer_wages, "Current Wages:");
-    text_layer_set_text(text_layer_wages_2, "$0.00");
-    
-    layer_set_hidden((Layer *)text_layer_welcome, false);
-    layer_set_hidden((Layer *)text_layer_rate, false);
-    layer_set_hidden((Layer *)text_layer_time, false);
-    layer_set_hidden((Layer *)text_layer_wages, false);
-    layer_set_hidden((Layer *)text_layer_wages_2, false);
-    
-    */
+
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Pushed Up");
     window_stack_push(hunterWindow, true);
     
@@ -197,8 +181,11 @@ static void hunterWindow_load(Window *window) {
     text_layer_set_text_alignment(text_layer_wages, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_wages_2, GTextAlignmentCenter);     
    
-    
+    text_layer_set_text(text_layer_welcome, "Welcome, Hunter!");
+    text_layer_set_text(text_layer_rate, "Rate: $12/hour");
     text_layer_set_text(text_layer_time, "Time Placeholder");
+    text_layer_set_text(text_layer_wages, "Current Wages:");
+    text_layer_set_text(text_layer_wages_2, "$0.00");
     
     layer_add_child(hunter_window_layer, text_layer_get_layer(text_layer_welcome));
     layer_add_child(hunter_window_layer, text_layer_get_layer(text_layer_rate));
