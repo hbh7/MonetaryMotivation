@@ -306,6 +306,9 @@ static void emeliaWindow_load(Window *window) {
     text_layer_set_text_color(text_layer_wages, GColorWhite);
     text_layer_set_text_color(text_layer_wages_2, GColorWhite);
 
+    text_layer_set_font(text_layer_time, fonts_get_system_font(FONT_KEY_DROID_SERIF_28_BOLD));
+    text_layer_set_font(text_layer_wages_2, fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21));
+    
     layer_add_child(emeliaWindow_layer, text_layer_get_layer(text_layer_welcome));
     layer_add_child(emeliaWindow_layer, text_layer_get_layer(text_layer_rate));
     layer_add_child(emeliaWindow_layer, text_layer_get_layer(text_layer_time));
