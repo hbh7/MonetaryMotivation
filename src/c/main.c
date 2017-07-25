@@ -102,9 +102,9 @@ static void update_time() {
             wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
         }
         else {
-            wages_hour_amount = wages_hour*10;
-            wages_minute_amount = wages_minute*0.167;
-            wages_second_amount = wages_second*0.00278;
+            wages_hour_amount = wages_hour*10.10;
+            wages_minute_amount = wages_minute*0.168;
+            wages_second_amount = wages_second*0.0028;
             wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
         }
     }
