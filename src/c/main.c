@@ -20,6 +20,7 @@ static TextLayer *text_layer_wages;
 static TextLayer *text_layer_wages_2;
 
 bool roundPebble;
+bool emelia;
 
 #if defined(PBL_ROUND)
     bool roundPebble = true;       
@@ -78,20 +79,41 @@ static void update_time() {
     double wages_hour_amount;
     double wages_minute_amount;
     double wages_second_amount;
+
+    // Manual override for after hours
+    //wages_hour = 20;
     
-    wages_hour = wages_hour-8;
-    wages_hour_amount = wages_hour*12;
-    wages_minute_amount = wages_minute*0.2;
-    wages_second_amount = wages_second*0.003;
-    wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
-    
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Starting Wages Hour: %d", wages_hour);   
+    if (wages_hour > 17) {
+        // Its past 5, set an amount
+        if (emelia == false) {
+            wages_total_amount = 96;
+        }
+        else {
+           wages_total_amount = 80;
+        }
+    } else {
+        // Its work time
+        wages_hour = wages_hour-8;
+        if (emelia == false) {
+            wages_hour_amount = wages_hour*12;
+            wages_minute_amount = wages_minute*0.2;
+            wages_second_amount = wages_second*0.003;
+            wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
+        }
+        else {
+            wages_hour_amount = wages_hour*10;
+            wages_minute_amount = wages_minute*0.167;
+            wages_second_amount = wages_second*0.00278;
+            wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
+        }
+    }
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Adjusted Wages Hour: %d", wages_hour);   
+
     static char wages_string[7];
     char wages_string_2[7] = "$";
-    //static char wages_string_3[7];
     strcpy(wages_string, floatToString(wages_string, 5, wages_total_amount));
-    // strcat(wages_string_2, "$");
     strcat(wages_string_2, wages_string);
-    //strcpy(wages_string_3, wages_string);
     text_layer_set_text(text_layer_wages_2, wages_string_2);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Total Wages: %s", wages_string_2);
 }
@@ -104,12 +126,14 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 // Handle the up/Hunter button
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Pushed Up");
+    emelia = false;
     window_stack_push(hunterWindow, true);
 }
 
 // Handle the down/Emelia button
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Pushed Down");
+    emelia = true;
     window_stack_push(emeliaWindow, true);
 }
 
@@ -129,9 +153,9 @@ static void mainWindow_load(Window *window) {
     // Pebble Round: 180 x 180
     
     if (roundPebble == true) {  // K so this is left/right, then down/up. Lower # is higher up.
-        text_layer_hunter = text_layer_create(GRect(0, 15, (bounds.size.w), 20));
-        text_layer_emelia = text_layer_create(GRect(0, 140, (bounds.size.w), 20));
-        text_layer_intro = text_layer_create(GRect(0, 80, bounds.size.w, 20));
+        text_layer_hunter = text_layer_create(GRect(0, 15, (bounds.size.w), 40));
+        text_layer_emelia = text_layer_create(GRect(0, 140, (bounds.size.w), 40));
+        text_layer_intro = text_layer_create(GRect(0, 70, bounds.size.w, 60));
         
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w), 20));
@@ -139,9 +163,9 @@ static void mainWindow_load(Window *window) {
         text_layer_wages = text_layer_create(GRect(0, 130, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 150, (bounds.size.w), 20));
     } else {                    // K so this is left/right, then down/up. Lower # is higher up.
-        text_layer_hunter = text_layer_create(GRect(0, 10, (bounds.size.w-10), 20));
-        text_layer_emelia = text_layer_create(GRect(0, 140, (bounds.size.w-10), 20));
-        text_layer_intro = text_layer_create(GRect(0, 72, bounds.size.w, 20));
+        text_layer_hunter = text_layer_create(GRect(0, 1, (bounds.size.w-10), 40));
+        text_layer_emelia = text_layer_create(GRect(0, 135, (bounds.size.w-10), 40));
+        text_layer_intro = text_layer_create(GRect(0, 65, bounds.size.w, 60));
         
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w-10), 20));
         text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w-10), 20));
@@ -150,20 +174,19 @@ static void mainWindow_load(Window *window) {
         text_layer_wages_2 = text_layer_create(GRect(0, 150, (bounds.size.w), 20));
     }
     
-    
-    
     text_layer_set_text_alignment(text_layer_welcome, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_rate, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_time, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_wages, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_wages_2, GTextAlignmentCenter);     
     
-    
     text_layer_set_text(text_layer_intro, "Who are you?");
     text_layer_set_text(text_layer_emelia, "Emelia");
     text_layer_set_text(text_layer_hunter, "Hunter");
     
-    text_layer_set_text(text_layer_time, "Time Placeholder");
+    text_layer_set_font(text_layer_intro, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+    text_layer_set_font(text_layer_emelia, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+    text_layer_set_font(text_layer_hunter, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
     
     text_layer_set_background_color(text_layer_intro, GColorBlack);
     text_layer_set_background_color(text_layer_hunter, GColorBlack);
@@ -208,13 +231,13 @@ static void hunterWindow_load(Window *window) {
     if ( roundPebble == true ) {  // K so this is left/right, then down/up. Lower # is higher up.
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w), 20));
-        text_layer_time = text_layer_create(GRect(0, 80, (bounds.size.w), 40));
+        text_layer_time = text_layer_create(GRect(0, 80, (bounds.size.w), 38));
         text_layer_wages = text_layer_create(GRect(0, 130, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 145, (bounds.size.w), 21));
     } else {                    // K so this is left/right, then down/up. Lower # is higher up. 
         text_layer_welcome = text_layer_create(GRect(0, 10, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
-        text_layer_time = text_layer_create(GRect(0, 60, (bounds.size.w), 40));
+        text_layer_time = text_layer_create(GRect(0, 60, (bounds.size.w), 38));
         text_layer_wages = text_layer_create(GRect(0, 120, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 135, (bounds.size.w), 21));
     }
@@ -271,13 +294,13 @@ static void emeliaWindow_load(Window *window) {
     if ( roundPebble == true ) {  // K so this is left/right, then down/up. Lower # is higher up.
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w), 20));
-        text_layer_time = text_layer_create(GRect(0, 80, (bounds.size.w), 40));
+        text_layer_time = text_layer_create(GRect(0, 80, (bounds.size.w), 38));
         text_layer_wages = text_layer_create(GRect(0, 130, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 145, (bounds.size.w), 21));
     } else {                    // K so this is left/right, then down/up. Lower # is higher up. 
         text_layer_welcome = text_layer_create(GRect(0, 10, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
-        text_layer_time = text_layer_create(GRect(0, 60, (bounds.size.w), 40));
+        text_layer_time = text_layer_create(GRect(0, 60, (bounds.size.w), 38));
         text_layer_wages = text_layer_create(GRect(0, 120, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 135, (bounds.size.w), 21));
     }
