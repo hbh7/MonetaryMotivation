@@ -5,6 +5,12 @@
 //
 // Pebble Time: 144 × 168
 // Pebble Round: 180 x 180
+//
+// Todo: 
+// Change Current Wages to Daily Wages after 5pm
+//
+
+
 
 static Window *mainWindow;
 static Window *hunterWindow;
@@ -137,7 +143,7 @@ static void update_time() {
     if (wages_hour > 17) {
         // Its past 5, set an amount
         if (emelia == false) {
-            wages_total_amount = 96;
+            wages_total_amount = 102;
         }
         else {
            wages_total_amount = 80;
