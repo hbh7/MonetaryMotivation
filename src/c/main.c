@@ -49,6 +49,19 @@ char* ftsNoDec(char* buffer2, int bufferSize2, double number2) {
     return buffer2;
 }
 
+char* fts3Dec(char* buffer3, int bufferSize3, double number3) {
+
+    char decimalBuffer2[7];
+
+    snprintf(buffer3, bufferSize3, "%d", (int)number3);
+    strcat(buffer3, ".");
+
+    snprintf(decimalBuffer2, 5, "%03d", (int)((double)(number3 - (int)number3) * (double)1000));
+    strcat(buffer3, decimalBuffer2);
+
+    return buffer3;
+}
+
 // Runs when the time changes
 static void update_time() {
     // Get a tm structure
@@ -57,8 +70,17 @@ static void update_time() {
 
     // Write the current hours, minutes, and seconds into a buffer
     static char time_buffer[12];
+    
+    if (emelia == true) {
     strftime(time_buffer, sizeof(time_buffer), clock_is_24h_style() ?
+                                          "%H:%M" : "%I:%M", tick_time);
+    } else {
+        strftime(time_buffer, sizeof(time_buffer), clock_is_24h_style() ?
                                           "%H:%M:%S" : "%I:%M:%S", tick_time);
+    }
+    
+    
+    
     // Write those to a bunch of buffers for wages
     static char wages_hour_buffer[8];
     static char wages_minute_buffer[8];
@@ -107,6 +129,11 @@ static void update_time() {
     //wages_hour = 20;
     
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Starting Wages Hour: %d", wages_hour);   
+    
+    // override
+    //wages_hour = 5;
+        
+    
     if (wages_hour > 17) {
         // Its past 5, set an amount
         if (emelia == false) {
@@ -118,7 +145,8 @@ static void update_time() {
     } else {
         // Its work time
         // Holy guacamole this is now complex
-        wages_hour = wages_hour-8;
+        //wages_hour = wages_hour-8;
+        
         if (wages_hour < 12) {
             if (emelia == false) {
                 // Hunter
@@ -161,12 +189,15 @@ static void update_time() {
         }
         
     }
-    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Adjusted Wages Hour: %d", wages_hour);   
     
     static char wages_string[8] = "";
     
     char idk[8];
-    snprintf(wages_string, sizeof(wages_string), "$%s", floatToString(idk, 8, wages_total_amount));
+    if (emelia == true) {
+        snprintf(wages_string, sizeof(wages_string), "$%s", fts3Dec(idk, 8, wages_total_amount));
+    } else {
+        snprintf(wages_string, sizeof(wages_string), "$%s", floatToString(idk, 8, wages_total_amount));
+    }
 
     text_layer_set_text(text_layer_wages_2, wages_string);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Total Wages: %s", wages_string);

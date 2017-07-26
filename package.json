@@ -1,10 +1,10 @@
 {
-    "author": "hbh7@hbh7.com",
+    "author": "hbh7",
     "dependencies": {},
     "keywords": [],
-    "name": "money-motive",
+    "name": "moneymotive",
     "pebble": {
-        "displayName": "MonetaryMotivation",
+        "displayName": "MoneyMotive",
         "enableMultiJS": true,
         "messageKeys": [],
         "projectType": "native",
@@ -12,6 +12,7 @@
             "media": [
                 {
                     "file": "images/Logo",
+                    "menuIcon": true,
                     "name": "Logo",
                     "targetPlatforms": null,
                     "type": "bitmap"
