@@ -11,13 +11,6 @@
         "resources": {
             "media": [
                 {
-                    "file": "images/Dollar",
-                    "menuIcon": true,
-                    "name": "Dollar",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
                     "file": "images/Logo",
                     "name": "Logo",
                     "targetPlatforms": null,

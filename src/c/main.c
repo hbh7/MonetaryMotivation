@@ -9,6 +9,7 @@
 static Window *mainWindow;
 static Window *hunterWindow;
 static Window *emeliaWindow;
+
 static TextLayer *text_layer_intro;
 static TextLayer *text_layer_emelia;
 static TextLayer *text_layer_hunter;
@@ -16,6 +17,7 @@ static TextLayer *text_layer_hunter;
 static TextLayer *text_layer_welcome;
 static TextLayer *text_layer_rate;
 static TextLayer *text_layer_time;
+static TextLayer *text_layer_time_remaining;
 static TextLayer *text_layer_wages;
 static TextLayer *text_layer_wages_2;
 
@@ -40,6 +42,13 @@ char* floatToString(char* buffer, int bufferSize, double number) {
     return buffer;
 }
 
+char* ftsNoDec(char* buffer2, int bufferSize2, double number2) {
+
+    snprintf(buffer2, bufferSize2, "%d", (int)number2);
+
+    return buffer2;
+}
+
 // Runs when the time changes
 static void update_time() {
     // Get a tm structure
@@ -50,7 +59,7 @@ static void update_time() {
     static char time_buffer[12];
     strftime(time_buffer, sizeof(time_buffer), clock_is_24h_style() ?
                                           "%H:%M:%S" : "%I:%M:%S", tick_time);
-    // Write those to a bunch of buffers
+    // Write those to a bunch of buffers for wages
     static char wages_hour_buffer[8];
     static char wages_minute_buffer[8];
     static char wages_second_buffer[8];
@@ -64,6 +73,20 @@ static void update_time() {
     int wages_hour = atof(wages_hour_buffer);
     int wages_minute = atof(wages_minute_buffer);
     int wages_second = atof(wages_second_buffer);
+    
+    // Write those to a bunch of buffers for time left
+    static char time_remaining_hour_buffer[8];
+    static char time_remaining_minute_buffer[8];
+    
+    strftime(time_remaining_hour_buffer, sizeof(time_remaining_hour_buffer), true ?
+                                          "%H" : "%H", tick_time);
+    strftime(time_remaining_minute_buffer, sizeof(time_remaining_minute_buffer), true ?
+                                          "%M" : "%M", tick_time);
+    
+    int current_hour = atof(time_remaining_hour_buffer);
+    int current_minute = atof(time_remaining_minute_buffer);
+    
+    
     /*
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Hour: %d", wages_hour);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Minute: %d", wages_minute);
@@ -75,7 +98,7 @@ static void update_time() {
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Ticking the time %p", time_buffer);
     
     // Logic for the counter
-    double wages_total_amount;
+    float wages_total_amount;
     double wages_hour_amount;
     double wages_minute_amount;
     double wages_second_amount;
@@ -96,12 +119,14 @@ static void update_time() {
         // Its work time
         wages_hour = wages_hour-8;
         if (emelia == false) {
+            // Hunter
             wages_hour_amount = wages_hour*12;
             wages_minute_amount = wages_minute*0.2;
             wages_second_amount = wages_second*0.003;
             wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
         }
         else {
+            // Emelia
             wages_hour_amount = wages_hour*10.10;
             wages_minute_amount = wages_minute*0.168;
             wages_second_amount = wages_second*0.0028;
@@ -109,13 +134,53 @@ static void update_time() {
         }
     }
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Adjusted Wages Hour: %d", wages_hour);   
-
+/*
     static char wages_string[7];
     char wages_string_2[7] = "$";
-    strcpy(wages_string, floatToString(wages_string, 5, wages_total_amount));
+    strncpy(wages_string, floatToString(wages_string, 5, wages_total_amount), sizeof(wages_string));
     strcat(wages_string_2, wages_string);
     text_layer_set_text(text_layer_wages_2, wages_string_2);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "Total Wages: %s", wages_string_2);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Total Wages: %s", wages_string_2); */
+    
+    static char wages_string[8] = "";
+    
+    char idk[8];
+    snprintf(wages_string, sizeof(wages_string), "$%s", floatToString(idk, 8, wages_total_amount));
+
+    text_layer_set_text(text_layer_wages_2, wages_string);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Total Wages: %s", wages_string);
+    
+    
+    // Calculate time remaining
+    
+    int remaining_hours = 16-current_hour;
+    if (remaining_hours < 0 ) { remaining_hours = 0; }
+    
+    int remaining_minutes;
+    if (current_hour > 16) { 
+        remaining_minutes = 0; 
+    } else {
+        remaining_minutes = 60-current_minute; 
+    }
+    
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Hours Remaining Int: %d", remaining_hours);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Minutes Remaining Int: %d", remaining_minutes);
+ 
+    char remaining_hours_string[8];
+    strncpy(remaining_hours_string, ftsNoDec(remaining_hours_string, 8, remaining_hours), sizeof(remaining_hours_string));
+    char remaining_minutes_string[8];       
+    strcpy(remaining_minutes_string, ftsNoDec(remaining_minutes_string, 8, remaining_minutes));
+
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Hours Remaining String: %s", remaining_hours_string);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Minutes Remaining String: %s", remaining_minutes_string);
+    
+    static char remaining_string[32];
+    snprintf(remaining_string, 32, "Remaining: %sh %sm", remaining_hours_string, remaining_minutes_string);
+    
+    text_layer_set_text(text_layer_time_remaining, remaining_string);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Time Remaining String: %s", remaining_string); 
+    
+    
 }
 
 // Handles time update
@@ -160,6 +225,7 @@ static void mainWindow_load(Window *window) {
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w), 20));
         text_layer_time = text_layer_create(GRect(0, 90, (bounds.size.w), 20));
+        text_layer_time_remaining = text_layer_create(GRect(0, 90, (bounds.size.w), 20));
         text_layer_wages = text_layer_create(GRect(0, 130, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 150, (bounds.size.w), 20));
     } else {                    // K so this is left/right, then down/up. Lower # is higher up.
@@ -170,6 +236,7 @@ static void mainWindow_load(Window *window) {
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w-10), 20));
         text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w-10), 20));
         text_layer_time = text_layer_create(GRect(0, 90, (bounds.size.w-10), 20));
+        text_layer_time_remaining = text_layer_create(GRect(0, 90, (bounds.size.w), 20));
         text_layer_wages = text_layer_create(GRect(0, 150, (bounds.size.w-10), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 150, (bounds.size.w), 20));
     }
@@ -177,6 +244,7 @@ static void mainWindow_load(Window *window) {
     text_layer_set_text_alignment(text_layer_welcome, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_rate, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_time, GTextAlignmentCenter);     
+    text_layer_set_text_alignment(text_layer_time_remaining, GTextAlignmentCenter);  
     text_layer_set_text_alignment(text_layer_wages, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_wages_2, GTextAlignmentCenter);     
     
@@ -219,7 +287,7 @@ static void mainWindow_load(Window *window) {
 static void mainWindow_unload(Window *window) {
     text_layer_destroy(text_layer_intro);
     text_layer_destroy(text_layer_emelia);
-    text_layer_destroy(text_layer_hunter);    
+    text_layer_destroy(text_layer_hunter);  
 }
 
 static void hunterWindow_load(Window *window) {
@@ -231,38 +299,44 @@ static void hunterWindow_load(Window *window) {
     if ( roundPebble == true ) {  // K so this is left/right, then down/up. Lower # is higher up.
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w), 20));
-        text_layer_time = text_layer_create(GRect(0, 80, (bounds.size.w), 38));
-        text_layer_wages = text_layer_create(GRect(0, 130, (bounds.size.w), 20));
-        text_layer_wages_2 = text_layer_create(GRect(0, 145, (bounds.size.w), 21));
+        text_layer_time = text_layer_create(GRect(0, 70, (bounds.size.w), 36));
+        text_layer_time_remaining = text_layer_create(GRect(0, 110, (bounds.size.w), 20));
+        text_layer_wages = text_layer_create(GRect(0, 130, (bounds.size.w), 22));
+        text_layer_wages_2 = text_layer_create(GRect(0, 145, (bounds.size.w), 22));
     } else {                    // K so this is left/right, then down/up. Lower # is higher up. 
         text_layer_welcome = text_layer_create(GRect(0, 10, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
-        text_layer_time = text_layer_create(GRect(0, 60, (bounds.size.w), 38));
-        text_layer_wages = text_layer_create(GRect(0, 120, (bounds.size.w), 20));
-        text_layer_wages_2 = text_layer_create(GRect(0, 135, (bounds.size.w), 21));
+        text_layer_time = text_layer_create(GRect(0, 60, (bounds.size.w), 36));
+        text_layer_time_remaining = text_layer_create(GRect(0, 100, (bounds.size.w), 20));
+        text_layer_wages = text_layer_create(GRect(0, 120, (bounds.size.w), 22));
+        text_layer_wages_2 = text_layer_create(GRect(0, 135, (bounds.size.w), 22));
     }
     
     text_layer_set_text_alignment(text_layer_welcome, GTextAlignmentCenter);     
-    text_layer_set_text_alignment(text_layer_rate, GTextAlignmentCenter);     
-    text_layer_set_text_alignment(text_layer_time, GTextAlignmentCenter);     
+    text_layer_set_text_alignment(text_layer_rate, GTextAlignmentCenter);
+    text_layer_set_text_alignment(text_layer_time, GTextAlignmentCenter);
+    text_layer_set_text_alignment(text_layer_time_remaining, GTextAlignmentCenter);
     text_layer_set_text_alignment(text_layer_wages, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_wages_2, GTextAlignmentCenter);     
    
     text_layer_set_text(text_layer_welcome, "Welcome, Hunter!");
     text_layer_set_text(text_layer_rate, "Rate: $12/hour");
-    text_layer_set_text(text_layer_time, "Loading...");
+    text_layer_set_text(text_layer_time, "Loading");
+    text_layer_set_text(text_layer_time_remaining, "Remaining: 0h 0m");
     text_layer_set_text(text_layer_wages, "Current Wages:");
     text_layer_set_text(text_layer_wages_2, "$0.00");
     
     text_layer_set_background_color(text_layer_welcome, GColorOrange);
     text_layer_set_background_color(text_layer_rate, GColorOrange);
     text_layer_set_background_color(text_layer_time, GColorChromeYellow);
+    text_layer_set_background_color(text_layer_time_remaining, GColorOrange);
     text_layer_set_background_color(text_layer_wages, GColorOrange);
     text_layer_set_background_color(text_layer_wages_2, GColorOrange);
     
     text_layer_set_text_color(text_layer_welcome, GColorWhite);
     text_layer_set_text_color(text_layer_rate, GColorWhite);
-    text_layer_set_text_color(text_layer_time, GColorWhite);
+    text_layer_set_text_color(text_layer_time, GColorBlack);
+    text_layer_set_text_color(text_layer_time_remaining, GColorWhite);
     text_layer_set_text_color(text_layer_wages, GColorWhite);
     text_layer_set_text_color(text_layer_wages_2, GColorWhite);
     
@@ -272,6 +346,7 @@ static void hunterWindow_load(Window *window) {
     layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_welcome));
     layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_rate));
     layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_time));
+    layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_time_remaining));
     layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_wages));
     layer_add_child(hunterWindow_layer, text_layer_get_layer(text_layer_wages_2));
 }
@@ -280,6 +355,7 @@ static void hunterWindow_unload(Window *window) {
     text_layer_destroy(text_layer_welcome);
     text_layer_destroy(text_layer_rate);
     text_layer_destroy(text_layer_time);
+    text_layer_destroy(text_layer_time_remaining);
     text_layer_destroy(text_layer_wages);
     text_layer_destroy(text_layer_wages_2);
 }
