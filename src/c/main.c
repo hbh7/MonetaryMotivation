@@ -98,10 +98,10 @@ static void update_time() {
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Ticking the time %p", time_buffer);
     
     // Logic for the counter
-    float wages_total_amount;
-    double wages_hour_amount;
-    double wages_minute_amount;
-    double wages_second_amount;
+    double wages_total_amount = 0;
+    double wages_hour_amount = 0;
+    double wages_minute_amount = 0;
+    double wages_second_amount = 0;
 
     // Manual override for after hours
     //wages_hour = 20;
@@ -117,30 +117,51 @@ static void update_time() {
         }
     } else {
         // Its work time
+        // Holy guacamole this is now complex
         wages_hour = wages_hour-8;
-        if (emelia == false) {
-            // Hunter
-            wages_hour_amount = wages_hour*12;
-            wages_minute_amount = wages_minute*0.2;
-            wages_second_amount = wages_second*0.003;
-            wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
+        if (wages_hour < 12) {
+            if (emelia == false) {
+                // Hunter
+                wages_hour_amount = wages_hour*12;
+                wages_minute_amount = wages_minute*0.2;
+                wages_second_amount = wages_second*0.003;
+                wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
+            }
+            else {
+                // Emelia
+                wages_hour_amount = wages_hour*10.10;
+                wages_minute_amount = wages_minute*0.168;
+                wages_second_amount = wages_second*0.0028;
+                wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount-5;
+            }
+        } else if (wages_hour == 12 && wages_minute < 31) {
+            if (emelia == false) {
+                // Hunter
+                wages_total_amount = 48;
+            }
+            else {
+                // Emelia
+                wages_total_amount = 35;
+            }
+        } else {
+            if (emelia == false) {
+                // Hunter
+                wages_hour_amount = (wages_hour-1)*12;
+                wages_minute_amount = (wages_minute+30)*0.2;
+                wages_second_amount = wages_second*0.003;
+                wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
+            }
+            else {
+                // Emelia
+                wages_hour_amount = (wages_hour-1)*10.10;
+                wages_minute_amount = (wages_minute+30)*0.168;
+                wages_second_amount = wages_second*0.0028;
+                wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount-5;
+            }
         }
-        else {
-            // Emelia
-            wages_hour_amount = wages_hour*10.10;
-            wages_minute_amount = wages_minute*0.168;
-            wages_second_amount = wages_second*0.0028;
-            wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
-        }
+        
     }
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Adjusted Wages Hour: %d", wages_hour);   
-/*
-    static char wages_string[7];
-    char wages_string_2[7] = "$";
-    strncpy(wages_string, floatToString(wages_string, 5, wages_total_amount), sizeof(wages_string));
-    strcat(wages_string_2, wages_string);
-    text_layer_set_text(text_layer_wages_2, wages_string_2);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "Total Wages: %s", wages_string_2); */
     
     static char wages_string[8] = "";
     
@@ -150,6 +171,7 @@ static void update_time() {
     text_layer_set_text(text_layer_wages_2, wages_string);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Total Wages: %s", wages_string);
     
+
     
     // Calculate time remaining
     
@@ -370,38 +392,44 @@ static void emeliaWindow_load(Window *window) {
     if ( roundPebble == true ) {  // K so this is left/right, then down/up. Lower # is higher up.
         text_layer_welcome = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 50, (bounds.size.w), 20));
-        text_layer_time = text_layer_create(GRect(0, 80, (bounds.size.w), 38));
+        text_layer_time = text_layer_create(GRect(0, 70, (bounds.size.w), 38));
+        text_layer_time_remaining = text_layer_create(GRect(0, 110, (bounds.size.w), 20));
         text_layer_wages = text_layer_create(GRect(0, 130, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 145, (bounds.size.w), 21));
     } else {                    // K so this is left/right, then down/up. Lower # is higher up. 
         text_layer_welcome = text_layer_create(GRect(0, 10, (bounds.size.w), 20));
         text_layer_rate = text_layer_create(GRect(0, 30, (bounds.size.w), 20));
-        text_layer_time = text_layer_create(GRect(0, 60, (bounds.size.w), 38));
+        text_layer_time = text_layer_create(GRect(0, 55, (bounds.size.w), 38));
+        text_layer_time_remaining = text_layer_create(GRect(0, 100, (bounds.size.w), 20));
         text_layer_wages = text_layer_create(GRect(0, 120, (bounds.size.w), 20));
         text_layer_wages_2 = text_layer_create(GRect(0, 135, (bounds.size.w), 21));
     }
     
     text_layer_set_text_alignment(text_layer_welcome, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_rate, GTextAlignmentCenter);     
-    text_layer_set_text_alignment(text_layer_time, GTextAlignmentCenter);     
+    text_layer_set_text_alignment(text_layer_time, GTextAlignmentCenter);
+    text_layer_set_text_alignment(text_layer_time_remaining, GTextAlignmentCenter);
     text_layer_set_text_alignment(text_layer_wages, GTextAlignmentCenter);     
     text_layer_set_text_alignment(text_layer_wages_2, GTextAlignmentCenter);     
    
     text_layer_set_text(text_layer_welcome, "Welcome, Emelia!");
     text_layer_set_text(text_layer_rate, "Rate: $10.10/hour");
     text_layer_set_text(text_layer_time, "Loading...");
+    text_layer_set_text(text_layer_time_remaining, "Remaining: 0h 0m");
     text_layer_set_text(text_layer_wages, "Current Wages:");
     text_layer_set_text(text_layer_wages_2, "$0.00");
     
     text_layer_set_background_color(text_layer_welcome, GColorIndigo);
     text_layer_set_background_color(text_layer_rate, GColorIndigo);
     text_layer_set_background_color(text_layer_time, GColorIndigo);
+    text_layer_set_background_color(text_layer_time_remaining, GColorIndigo);
     text_layer_set_background_color(text_layer_wages, GColorIndigo);
     text_layer_set_background_color(text_layer_wages_2, GColorIndigo);
     
     text_layer_set_text_color(text_layer_welcome, GColorWhite);
     text_layer_set_text_color(text_layer_rate, GColorWhite);
     text_layer_set_text_color(text_layer_time, GColorWhite);
+    text_layer_set_text_color(text_layer_time_remaining, GColorWhite);
     text_layer_set_text_color(text_layer_wages, GColorWhite);
     text_layer_set_text_color(text_layer_wages_2, GColorWhite);
 
@@ -411,6 +439,7 @@ static void emeliaWindow_load(Window *window) {
     layer_add_child(emeliaWindow_layer, text_layer_get_layer(text_layer_welcome));
     layer_add_child(emeliaWindow_layer, text_layer_get_layer(text_layer_rate));
     layer_add_child(emeliaWindow_layer, text_layer_get_layer(text_layer_time));
+    layer_add_child(emeliaWindow_layer, text_layer_get_layer(text_layer_time_remaining));
     layer_add_child(emeliaWindow_layer, text_layer_get_layer(text_layer_wages));
     layer_add_child(emeliaWindow_layer, text_layer_get_layer(text_layer_wages_2));
     
