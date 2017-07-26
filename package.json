@@ -1,9 +1,14 @@
 {
     "author": "hbh7",
-    "dependencies": {},
+    "dependencies": {
+        "pebble-clay": "^1.0.0"
+    },
     "keywords": [],
     "name": "moneymotive",
     "pebble": {
+        "capabilities": [
+            "configurable"
+        ],
         "displayName": "MoneyMotive",
         "enableMultiJS": true,
         "messageKeys": [],

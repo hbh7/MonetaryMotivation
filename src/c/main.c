@@ -7,7 +7,7 @@
 // Pebble Round: 180 x 180
 //
 // Todo: 
-// Change Current Wages to Daily Wages after 5pm
+// Config Panel
 //
 
 
