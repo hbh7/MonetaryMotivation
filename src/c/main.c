@@ -154,6 +154,7 @@ static void update_time() {
         //wages_hour = wages_hour-8;
         
         if (wages_hour < 12) {
+            wages_hour = wages_hour - 8;
             if (emelia == false) {
                 // Hunter
                 wages_hour_amount = wages_hour*12;
@@ -178,6 +179,7 @@ static void update_time() {
                 wages_total_amount = 35;
             }
         } else {
+            wages_hour = wages_hour - 8;
             if (emelia == false) {
                 // Hunter
                 wages_hour_amount = (wages_hour-1)*12;
@@ -208,7 +210,18 @@ static void update_time() {
     text_layer_set_text(text_layer_wages_2, wages_string);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Total Wages: %s", wages_string);
     
-
+    current_hour = 17;
+    
+    static char wages_display_string[24];
+    if (current_hour > 16) { 
+        snprintf(wages_display_string, sizeof(wages_display_string), "Today's Wages:");
+        text_layer_set_text(text_layer_wages, wages_display_string);
+    } else {
+        snprintf(wages_display_string, sizeof(wages_display_string), "Current Wages:");
+        text_layer_set_text(text_layer_wages, wages_display_string);
+    }
+    
+    
     
     // Calculate time remaining
     
@@ -222,6 +235,20 @@ static void update_time() {
         remaining_minutes = 60-current_minute; 
     }
     
+    if (emelia == false) {
+        // Hunter
+        if (current_hour < 8 ) { remaining_hours = 9; }
+        if (current_hour < 8 ) { remaining_minutes = 0; }
+    } else {
+        // Emelia
+        if (current_hour < 8 ) { remaining_hours = 8; }
+        if (current_hour == 8 ) { remaining_hours = 8; }
+        
+        if (current_hour < 8 ) { remaining_minutes = 30; }
+        if (current_hour == 8 && current_minute < 31 ) { remaining_minutes = 30; }
+    }
+    
+    
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Hours Remaining Int: %d", remaining_hours);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Minutes Remaining Int: %d", remaining_minutes);
  
@@ -234,11 +261,15 @@ static void update_time() {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Minutes Remaining String: %s", remaining_minutes_string);
     
     static char remaining_string[32];
-    snprintf(remaining_string, 32, "Remaining: %sh %sm", remaining_hours_string, remaining_minutes_string);
+    
+    if (current_hour > 16 ) { 
+        snprintf(remaining_string, 32, "Work is over"); 
+    } else {
+        snprintf(remaining_string, 32, "Remaining: %sh %sm", remaining_hours_string, remaining_minutes_string);
+    }
     
     text_layer_set_text(text_layer_time_remaining, remaining_string);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Time Remaining String: %s", remaining_string); 
-    
     
 }
 
