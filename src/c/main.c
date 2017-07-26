@@ -184,14 +184,14 @@ static void update_time() {
                 // Hunter
                 wages_hour_amount = (wages_hour-1)*12;
                 wages_minute_amount = (wages_minute+30)*0.2;
-                wages_second_amount = wages_second*0.003;
+                wages_second_amount = wages_second*0.00333;
                 wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount;
             }
             else {
                 // Emelia
                 wages_hour_amount = (wages_hour-1)*10.10;
-                wages_minute_amount = (wages_minute+30)*0.168;
-                wages_second_amount = wages_second*0.0028;
+                wages_minute_amount = (wages_minute+30)*0.16833;
+                wages_second_amount = wages_second*0.00281;
                 wages_total_amount = wages_hour_amount+wages_minute_amount+wages_second_amount-5;
             }
         }
@@ -201,16 +201,18 @@ static void update_time() {
     static char wages_string[8] = "";
     
     char idk[8];
-    if (emelia == true) {
+    //if (emelia == true) {
         snprintf(wages_string, sizeof(wages_string), "$%s", fts3Dec(idk, 8, wages_total_amount));
-    } else {
-        snprintf(wages_string, sizeof(wages_string), "$%s", floatToString(idk, 8, wages_total_amount));
-    }
+    // Code to run if you want 2 decimal points instead
+    //} else {
+    //    snprintf(wages_string, sizeof(wages_string), "$%s", floatToString(idk, 8, wages_total_amount));
+    //}
 
     text_layer_set_text(text_layer_wages_2, wages_string);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Total Wages: %s", wages_string);
     
-    current_hour = 17;
+    // Debug Override
+    //current_hour = 17;
     
     static char wages_display_string[24];
     if (current_hour > 16) { 
