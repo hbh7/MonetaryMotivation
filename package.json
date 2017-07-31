@@ -11,7 +11,18 @@
         ],
         "displayName": "MoneyMotive",
         "enableMultiJS": true,
-        "messageKeys": [],
+        "messageKeys": [
+            "BackgroundColor",
+            "TextColor",
+            "StartTime",
+            "EndTime",
+            "LunchStart",
+            "LunchEnd",
+            "HourlyRate",
+            "Name",
+            "Seconds",
+            "DecimalPlaces"
+        ],
         "projectType": "native",
         "resources": {
             "media": [

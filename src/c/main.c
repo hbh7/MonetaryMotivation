@@ -68,6 +68,38 @@ char* fts3Dec(char* buffer3, int bufferSize3, double number3) {
     return buffer3;
 }
 
+GColor bg_color;
+GColor fg_color;
+
+static void prv_inbox_received_handler(DictionaryIterator *iter, void *context) {
+  // Read color preferences
+  Tuple *bg_color_t = dict_find(iter, MESSAGE_KEY_BackgroundColor);
+  if(bg_color_t) {
+    bg_color = GColorFromHEX(bg_color_t->value->int32);
+  }
+
+  Tuple *fg_color_t = dict_find(iter, MESSAGE_KEY_TextColor);
+  if(fg_color_t) {
+    fg_color = GColorFromHEX(fg_color_t->value->int32);
+  }
+
+  // Read boolean preferences
+  Tuple *second_tick_t = dict_find(iter, MESSAGE_KEY_Seconds);
+  if(second_tick_t) {
+    bool second_ticks = second_tick_t->value->int32 == 1;
+  }
+
+}
+
+void prv_init(void) {
+  // Open AppMessage connection
+  app_message_register_inbox_received(prv_inbox_received_handler);
+  app_message_open(128, 128);
+
+}
+
+
+
 // Runs when the time changes
 static void update_time() {
     // Get a tm structure
@@ -418,19 +450,19 @@ static void hunterWindow_load(Window *window) {
     text_layer_set_text(text_layer_wages, "Current Wages:");
     text_layer_set_text(text_layer_wages_2, "$0.00");
     
-    text_layer_set_background_color(text_layer_welcome, GColorOrange);
-    text_layer_set_background_color(text_layer_rate, GColorOrange);
-    text_layer_set_background_color(text_layer_time, GColorChromeYellow);
-    text_layer_set_background_color(text_layer_time_remaining, GColorOrange);
-    text_layer_set_background_color(text_layer_wages, GColorOrange);
-    text_layer_set_background_color(text_layer_wages_2, GColorOrange);
+    text_layer_set_background_color(text_layer_welcome, bg_color);
+    text_layer_set_background_color(text_layer_rate, bg_color);
+    text_layer_set_background_color(text_layer_time, bg_color);
+    text_layer_set_background_color(text_layer_time_remaining, bg_color);
+    text_layer_set_background_color(text_layer_wages, bg_color);
+    text_layer_set_background_color(text_layer_wages_2, bg_color);
     
-    text_layer_set_text_color(text_layer_welcome, GColorWhite);
-    text_layer_set_text_color(text_layer_rate, GColorWhite);
-    text_layer_set_text_color(text_layer_time, GColorBlack);
-    text_layer_set_text_color(text_layer_time_remaining, GColorWhite);
-    text_layer_set_text_color(text_layer_wages, GColorWhite);
-    text_layer_set_text_color(text_layer_wages_2, GColorWhite);
+    text_layer_set_text_color(text_layer_welcome, fg_color);
+    text_layer_set_text_color(text_layer_rate, fg_color);
+    text_layer_set_text_color(text_layer_time, fg_color);
+    text_layer_set_text_color(text_layer_time_remaining, fg_color);
+    text_layer_set_text_color(text_layer_wages, fg_color);
+    text_layer_set_text_color(text_layer_wages_2, fg_color);
     
     text_layer_set_font(text_layer_time, fonts_get_system_font(FONT_KEY_DROID_SERIF_28_BOLD));
     text_layer_set_font(text_layer_wages_2, fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21));
@@ -544,7 +576,7 @@ static void init(void) {
           .load = hunterWindow_load,
           .unload = hunterWindow_unload,
         });
-        window_set_background_color(hunterWindow, GColorOrange);
+        window_set_background_color(hunterWindow, bg_color);
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Created hunterWindow");
     
     emeliaWindow = window_create();
