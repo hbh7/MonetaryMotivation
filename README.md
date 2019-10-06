@@ -1,3 +1,3 @@
 # MonetaryMotivation
 
-This is an app my GF and I made and use to know how much money we're making at work at any given moment. :D
+An app that tells you how much money you've made while at work at any given moment
